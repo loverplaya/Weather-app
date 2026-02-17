@@ -1,5 +1,9 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QLineEdit
+import requests
+from PyQt6.QtWidgets import (QApplication, QWidget, QLabel, QPushButton, QLineEdit, QComboBox, QListWidget, QVBoxLayout,
+                             QHBoxLayout, QMessageBox, QFrame)
+from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtGui import QIcon, QFont,QPixmap, QPalette
 
 
 class MainWindow(QWidget):
@@ -14,8 +18,6 @@ class MainWindow(QWidget):
         self.show()
 
     def setUpMainWindow(self):
-
-
 
 
 app = QApplication(sys.argv)
