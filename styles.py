@@ -39,19 +39,22 @@ class LineEdit_Style:
         }
     """
 
-    writeCity_LineEdit_second = """QLineEdit {
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            border-radius: 20px;
-            padding: 8px 15px;
-            background-color: rgba(255, 255, 255, 0.2);
-            color: black;
-            font-size: 16px;
-        }
-        QLineEdit:focus {
-            border: 2px solid white;
-            background-color: rgba(255, 255, 255, 0.3);
-        }
-        QLineEdit::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
-    """
+    writeCity_LineEdit_second =  """
+QLineEdit {
+    border: 2px solid #9b59b6;
+    border-radius: 8px;
+    padding: 3px 8px;
+    background-color: rgba(155, 89, 182, 0.1);
+    color: black;
+    font-size: 11px;
+    font-weight: bold;
+}
+QLineEdit:focus {
+    border: 2px solid #8e44ad;
+    background-color: rgba(155, 89, 182, 0.2);
+    color: white;
+}
+QLineEdit::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+"""
