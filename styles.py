@@ -38,3 +38,20 @@ class LineEdit_Style:
             color: rgba(255, 255, 255, 0.7);
         }
     """
+
+    writeCity_LineEdit_second = """QLineEdit {
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+            padding: 8px 15px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: black;
+            font-size: 16px;
+        }
+        QLineEdit:focus {
+            border: 2px solid white;
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        QLineEdit::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+    """
