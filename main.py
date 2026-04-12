@@ -1,6 +1,5 @@
 import sys
 import requests
-import os
 from PyQt6.QtWidgets import (QApplication, QWidget, QLabel, QPushButton, QLineEdit, QComboBox, QListWidget, QVBoxLayout,
                              QHBoxLayout, QMessageBox, QFrame, QStyle)
 from PyQt6.QtCore import Qt, QTimer, QSize
@@ -38,6 +37,16 @@ class MainWindow(QWidget):
         if hasattr(self, 'main_screen'):
             self.main_screen.update_position(self.width())
         super().resizeEvent(event)
+
+    # При нажатии на кнопку смены темы
+    def toggle_theme(self):
+        if self.bg.current_theme == "light":
+            self.bg.set_theme("dark")
+        else:
+            self.bg.set_theme("light")
+
+        # Переключаем стили для кнопок и полей
+        #self.apply_widget_styles()
 
 
 app = QApplication(sys.argv)

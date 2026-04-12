@@ -2,7 +2,7 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLin
 from PyQt6.QtCore import Qt, QSize
 from PyQt6.QtGui import QIcon
 from styles import ButtonStyle, LineEdit_Style
-import os
+
 
 class main_screen(QWidget):
     def __init__(self, parent=None):
@@ -10,44 +10,54 @@ class main_screen(QWidget):
         self.setupUi()
 
     def setupUi(self):
-        search_field = QLineEdit(self)
-        search_field.setPlaceholderText("Введите местоположение")
-        search_field.setMinimumWidth(300)
-        search_field.setMinimumHeight(35)
-        search_field.setStyleSheet(LineEdit_Style.writeCity_LineEdit)
+        # ВЕРХНЯЯ ПАНЕЛЬ
+        self.top_layout = QHBoxLayout()
+        self.top_layout.setContentsMargins(0, 5, 10, 0)
+        self.top_layout.addStretch()
 
-        # Поле ввода города верхнее
-        self.search_field_up = QLineEdit(self)
+        self.change_theme = QPushButton()
+        self.change_theme.setIcon(QIcon("icons/change_theme1.png"))
+        self.change_theme.setIconSize(QSize(20, 20))
+        self.change_theme.setFixedSize(37, 37)
+        self.change_theme.setStyleSheet("border-radius: 10px; background-color: rgba(255,255,255,0.2);")
+        self.change_theme.clicked.connect(self.on_theme_clicked)
+
+        self.search_field_up = QLineEdit()
         self.search_field_up.setPlaceholderText("Введите местоположение")
-        self.search_field_up.setFixedSize(224, 37)
+        self.search_field_up.setMinimumWidth(180)
+        self.search_field_up.setMaximumWidth(300)
         self.search_field_up.setStyleSheet(LineEdit_Style.writeCity_LineEdit)
-        self.search_field_up.move(self.width() - 223, 5)
 
-        # кнопка
-        self.result_btn = QPushButton(" Узнать погоду", self)
+        self.top_layout.addWidget(self.change_theme)
+        self.top_layout.addWidget(self.search_field_up)
+
+        # Центральная часть
+        self.search_field_center = QLineEdit()
+        self.search_field_center.setPlaceholderText("Введите местоположение")
+        self.search_field_center.setMinimumWidth(300)
+        self.search_field_center.setMinimumHeight(35)
+        self.search_field_center.setStyleSheet(LineEdit_Style.writeCity_LineEdit)
+
+        self.result_btn = QPushButton(" Узнать погоду")
         self.result_btn.setMinimumHeight(40)
         self.result_btn.setMinimumWidth(150)
-
-        my_icon = QIcon("icons/search.png")
+        self.result_btn.setIcon(QIcon("icons/search.png"))
         self.result_btn.setIconSize(QSize(20, 20))
-
-        self.result_btn.setIcon(my_icon)
-        self.result_btn.setIconSize(QSize(20, 20))
-
         self.result_btn.setStyleSheet(ButtonStyle.weather_btn)
+
+        # Сборка макетов
+        h_layout = QHBoxLayout()
+        h_layout.addStretch()
+        h_layout.addWidget(self.search_field_center)
+        h_layout.addStretch()
 
         btn_layout = QHBoxLayout()
         btn_layout.addStretch()
         btn_layout.addWidget(self.result_btn)
         btn_layout.addStretch()
 
-        #
-        h_layout = QHBoxLayout()
-        h_layout.addStretch()
-        h_layout.addWidget(search_field)
-        h_layout.addStretch()
-
         main_layout = QVBoxLayout()
+        main_layout.addLayout(self.top_layout)
         main_layout.addStretch(3)
         main_layout.addLayout(h_layout)
         main_layout.addSpacing(5)
@@ -56,8 +66,9 @@ class main_screen(QWidget):
 
         self.setLayout(main_layout)
 
+    def on_theme_clicked(self):
         if self.parent():
-            self.update_position(self.parent().width())
+            self.parent().toggle_theme()
 
-    def update_position(self, parent_width):
-        self.search_field_up.move(parent_width - 245, 5)
+    def update_position(self, width):
+        pass
