@@ -1,6 +1,6 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit, QLabel
 from PyQt6.QtCore import Qt, QSize
-from PyQt6.QtGui import QIcon
+from PyQt6.QtGui import QIcon, QFont
 from styles import ButtonStyle, LineEdit_Style
 
 
@@ -67,8 +67,48 @@ class main_screen(QWidget):
         self.setLayout(main_layout)
 
     def on_theme_clicked(self):
-        if self.parent():
-            self.parent().toggle_theme()
+        # Ищем родителя с методом toggle_theme (поднимаемся выше)
+        parent = self.parent()
+        while parent:
+            if hasattr(parent, 'toggle_theme'):
+                parent.toggle_theme()
+                return
+            parent = parent.parent()
 
     def update_position(self, width):
         pass
+
+
+class weather_screen(QWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setupUi()
+
+    def setupUi(self):
+        layout = QVBoxLayout()
+
+        self.city_label = QLabel("Город")
+        self.city_label.setStyleSheet("font-size: 24px; font-weight: bold; color: white;")
+        self.city_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.temp_label = QLabel("--°C")
+        self.temp_label.setStyleSheet("font-size: 48px; font-weight: bold; color: white;")
+        self.temp_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.back_btn = QPushButton("← Назад")
+        self.back_btn.setMinimumHeight(40)
+        self.back_btn.setMinimumWidth(150)
+        self.back_btn.setStyleSheet(ButtonStyle.weather_btn)
+
+        layout.addStretch()
+        layout.addWidget(self.city_label)
+        layout.addWidget(self.temp_label)
+        layout.addStretch()
+        layout.addWidget(self.back_btn, alignment=Qt.AlignmentFlag.AlignCenter)
+        layout.addStretch()
+
+        self.setLayout(layout)
+
+    def set_weather(self, city, temp):
+        self.city_label.setText(city)
+        self.temp_label.setText(f"{temp:.1f}°C")
