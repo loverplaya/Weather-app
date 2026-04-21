@@ -2,7 +2,16 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLin
 from PyQt6.QtCore import Qt, QSize
 from PyQt6.QtGui import QIcon, QFont
 from styles import ButtonStyle, LineEdit_Style
+import os
+import sys
 
+# чтобы при компиляции были видны иконки
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 
 class main_screen(QWidget):
     def __init__(self, parent=None):
@@ -16,7 +25,7 @@ class main_screen(QWidget):
         self.top_layout.addStretch()
 
         self.change_theme = QPushButton()
-        self.change_theme.setIcon(QIcon("icons/change_theme1.png"))
+        self.change_theme.setIcon(QIcon(resource_path("icons/change_theme1.png")))
         self.change_theme.setIconSize(QSize(20, 20))
         self.change_theme.setFixedSize(37, 37)
         self.change_theme.setStyleSheet("border-radius: 10px; background-color: rgba(255,255,255,0.2);")
@@ -41,7 +50,7 @@ class main_screen(QWidget):
         self.result_btn = QPushButton(" Узнать погоду")
         self.result_btn.setMinimumHeight(40)
         self.result_btn.setMinimumWidth(150)
-        self.result_btn.setIcon(QIcon("icons/search.png"))
+        self.result_btn.setIcon(QIcon(resource_path("icons/search.png")))
         self.result_btn.setIconSize(QSize(20, 20))
         self.result_btn.setStyleSheet(ButtonStyle.weather_btn)
 

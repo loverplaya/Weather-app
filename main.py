@@ -1,10 +1,19 @@
 import sys
+import os
 from PyQt6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QStackedWidget, QMessageBox)
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
 from background import background
 from screens import main_screen, weather_screen
 from weather_API import show_weather
+
+# чтобы при компиляции были видны иконки
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 
 
 class MainWindow(QWidget):
@@ -15,7 +24,7 @@ class MainWindow(QWidget):
     def initializeUI(self):
         self.setGeometry(600, 200, 800, 600)
         self.setWindowTitle("Прогноз погоды")
-        self.setWindowIcon(QIcon("app_icon.ico"))
+        self.setWindowIcon(QIcon(resource_path("icons/app_icon.ico")))
         self.setUpMainWindow()
         self.show()
 
