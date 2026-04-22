@@ -121,3 +121,9 @@ class weather_screen(QWidget):
     def set_weather(self, city, temp):
         self.city_label.setText(city)
         self.temp_label.setText(f"{temp:.1f}°C")
+
+    def apply_theme(self, theme):
+        if theme == "dark":
+            self.back_btn.setStyleSheet(ButtonStyle.back_btn_dark)
+        else:
+            self.back_btn.setStyleSheet(ButtonStyle.back_btn)
