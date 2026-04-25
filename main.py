@@ -1,13 +1,11 @@
 import sys
 import os
 from PyQt6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QStackedWidget, QMessageBox)
-from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
 from background import background
 from screens import main_screen, weather_screen
 from weather_API import show_weather
-from styles import ButtonStyle
-from styles import LineEdit_Style
+from styles import ButtonStyle, LineEdit_Style, MessageStyle
 
 # чтобы при компиляции были видны иконки
 def resource_path(relative_path):
@@ -17,6 +15,22 @@ def resource_path(relative_path):
         base_path = os.path.abspath(".")
     return os.path.join(base_path, relative_path)
 
+def show_message(parent, title, text, style_type="warning"):
+    msg = QMessageBox(parent)
+    msg.setWindowTitle(title)
+    msg.setText(text)
+
+    if style_type == "warning":
+        msg.setIcon(QMessageBox.Icon.Warning)
+        msg.setStyleSheet(MessageStyle.warning)
+    elif style_type == "error":
+        msg.setIcon(QMessageBox.Icon.Critical)
+        msg.setStyleSheet(MessageStyle.error)
+    elif style_type == "info":
+        msg.setIcon(QMessageBox.Icon.Information)
+        msg.setStyleSheet(MessageStyle.info)
+
+    msg.exec()
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -24,7 +38,7 @@ class MainWindow(QWidget):
         self.initializeUI()
 
     def initializeUI(self):
-        self.setGeometry(600, 200, 800, 600)
+        self.setGeometry(600, 200, 1366, 768)
         self.setWindowTitle("Прогноз погоды")
         self.setWindowIcon(QIcon(resource_path("icons/app_icon.ico")))
         self.setUpMainWindow()
@@ -59,7 +73,7 @@ class MainWindow(QWidget):
     def on_search_clicked(self):
         city = self.main_screen.search_field_center.text()
         if not city:
-            QMessageBox.warning(self, "Ошибка", "Введите название города")
+            show_message(self, "Ошибка", "Введите название города")
             return
 
         weather_data = show_weather(city)
@@ -68,7 +82,7 @@ class MainWindow(QWidget):
             self.weather_screen.set_weather(city, temp)
             self.stacked.setCurrentIndex(1)
         else:
-            QMessageBox.warning(self, "Ошибка", f"Город '{city}' не найден")
+            show_message(self, "Ошибка", f"Город '{city}' не найден")
 
     def go_back(self):
         self.stacked.setCurrentIndex(0)

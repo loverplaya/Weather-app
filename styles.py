@@ -116,3 +116,51 @@ QLineEdit::placeholder {
     QLineEdit::placeholder {
     color: #cccccc;
     }"""
+
+class MessageStyle:
+    base_style = """
+        QMessageBox {
+            background-color: rgba(30, 60, 110, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+        }
+        QMessageBox QLabel {
+            color: #ffffff;
+            font-family: "Segoe UI", sans-serif;
+            font-size: 15px;
+            padding: 10px;
+        }
+        QPushButton {
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:0, 
+                                        stop:0 #4facfe, stop:1 #00f2fe);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 20px;
+            font-size: 13px;
+            font-weight: bold;
+            min-width: 80px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        QPushButton:hover {
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:0, 
+                                        stop:0 #5fcfff, stop:1 #20f5ff);
+        }
+        QPushButton:pressed {
+            background-color: #3d84c6;
+        }
+    """
+
+    warning = base_style + """
+        QMessageBox QLabel { color: #ffeb3b; }
+    """  # если пустое поле
+
+    error = base_style + """
+        QMessageBox QLabel { color: #ff8a80; }
+    """ # город не найден и тд
+
+    info = base_style + """
+        QMessageBox QLabel { color: #80d8ff; }
+    """
+
