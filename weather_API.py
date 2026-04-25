@@ -3,7 +3,7 @@ from urllib.parse import quote
 
 def show_weather(city_name):
     if not city_name:
-        return None
+        return {"error": "empty"}
 
     city_name = city_name.strip()
     encoded_city = quote(city_name)
@@ -15,7 +15,13 @@ def show_weather(city_name):
         response = requests.get(URL, timeout=5)
         if response.status_code == 200:
             return response.json()
+        elif response.status_code == 404:
+            return {"error": "not_found"}
         else:
-            return None
+            return {"error": "api_error", "code": response.status_code}
+    except requests.exceptions.ConnectionError:
+        return {"error": "no_internet"}
+    except requests.exceptions.Timeout:
+        return {"error": "timeout"}
     except:
-        return None
+        return {"error": "unknown"}

@@ -63,6 +63,32 @@ class ButtonStyle:
         background-color: #555;
     }"""
 
+    fav_btn = """
+            QPushButton {
+                font-size: 28px;
+                background-color: transparent;
+                color: gold;
+                border: 2px solid gold;
+                border-radius: 25px;
+            }
+            QPushButton:hover {
+                background-color: rgba(255, 215, 0, 0.2);
+            }
+        """
+
+    fav_btn_active = """
+            QPushButton {
+                font-size: 28px;
+                background-color: gold;
+                color: black;
+                border: 2px solid gold;
+                border-radius: 25px;
+            }
+            QPushButton:hover {
+                background-color: rgba(255, 215, 0, 0.8);
+            }
+        """
+
 
 class LineEdit_Style:
     writeCity_LineEdit =  """QLineEdit {

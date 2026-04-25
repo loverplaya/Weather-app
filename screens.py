@@ -104,6 +104,11 @@ class weather_screen(QWidget):
         self.temp_label.setStyleSheet("font-size: 48px; font-weight: bold; color: white;")
         self.temp_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
+        self.fav_btn = QPushButton("★")
+        self.fav_btn.setFixedSize(50, 50)
+        self.fav_btn.setStyleSheet(ButtonStyle.fav_btn)
+        self.fav_btn.setToolTip("Добавить в избранное")
+
         self.back_btn = QPushButton("← Назад")
         self.back_btn.setMinimumHeight(40)
         self.back_btn.setMinimumWidth(150)

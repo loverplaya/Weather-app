@@ -71,18 +71,43 @@ class MainWindow(QWidget):
         self.weather_screen.back_btn.clicked.connect(self.go_back)
 
     def on_search_clicked(self):
-        city = self.main_screen.search_field_center.text()
+        # Берём город из активного экрана
+        if self.stacked.currentIndex() == 0:
+            city = self.main_screen.search_field_center.text()
+        else:
+            city = self.weather_screen.search_field_up.text()
+
         if not city:
-            show_message(self, "Ошибка", "Введите название города")
+            show_message(self, "Ошибка", "Введите название города", "error")
             return
 
-        weather_data = show_weather(city)
-        if weather_data:
-            temp = weather_data['main']['temp']
+        result = show_weather(city)
+
+        # Проверяем, что пришло
+        if result is None:
+            show_message(self, "Ошибка", "Неизвестная ошибка", "error")
+            return
+
+        # Если пришёл словарь с ошибкой
+        if "error" in result:
+            error = result["error"]
+            if error == "not_found":
+                show_message(self, "Ошибка", f"Город '{city}' не найден", "error")
+            elif error == "no_internet":
+                show_message(self, "Ошибка", "Нет подключения к интернету", "error")
+            elif error == "timeout":
+                show_message(self, "Ошибка", "Сервер не отвечает. Попробуйте позже", "error")
+            else:
+                show_message(self, "Ошибка", f"Ошибка API: {result.get('code', 'unknown')}", "error")
+            return
+
+        # Если всё хорошо — пришли данные о погоде
+        if "main" in result and "temp" in result["main"]:
+            temp = result['main']['temp']
             self.weather_screen.set_weather(city, temp)
             self.stacked.setCurrentIndex(1)
         else:
-            show_message(self, "Ошибка", f"Город '{city}' не найден")
+            show_message(self, "Ошибка", "Не удалось получить данные о погоде", "error")
 
     def go_back(self):
         self.stacked.setCurrentIndex(0)
