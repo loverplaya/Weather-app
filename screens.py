@@ -28,7 +28,14 @@ class main_screen(QWidget):
         self.search_field_up.setMaximumWidth(300)
         self.search_field_up.setStyleSheet(LineEdit_Style.writeCity_LineEdit)
 
+        self.fav_list_btn = QPushButton()
+        self.fav_list_btn.setIcon(QIcon(resource_path("icons/star.png")))
+        self.fav_list_btn.setIconSize(QSize(20, 20))
+        self.fav_list_btn.setFixedSize(37, 37)
+        self.fav_list_btn.setStyleSheet("border-radius: 10px; background-color: rgba(255,255,255,0.2);")
+
         self.top_layout.addWidget(self.change_theme)
+        self.top_layout.addWidget(self.fav_list_btn)
         self.top_layout.addWidget(self.search_field_up)
 
         # Центральная часть
@@ -72,10 +79,12 @@ class main_screen(QWidget):
             self.search_field_center.setStyleSheet(LineEdit_Style.writeCity_LineEdit_dark)
             self.result_btn.setStyleSheet(ButtonStyle.weather_btn_dark)
             self.change_theme.setStyleSheet("border-radius: 10px; background-color: rgba(0,0,0,0.3);")
+            self.fav_list_btn.setStyleSheet("border-radius: 10px; background-color: rgba(0,0,0,0.3);")
         else:
             self.search_field_up.setStyleSheet(LineEdit_Style.writeCity_LineEdit)
             self.search_field_center.setStyleSheet(LineEdit_Style.writeCity_LineEdit)
             self.result_btn.setStyleSheet(ButtonStyle.weather_btn)
             self.change_theme.setStyleSheet("border-radius: 10px; background-color: rgba(255,255,255,0.2);")
+            self.fav_list_btn.setStyleSheet("border-radius: 10px; background-color: rgba(255,255,255,0.2);")
 
 

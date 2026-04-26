@@ -8,6 +8,8 @@ from weather_screen import weather_screen
 from weather_API import show_weather
 from styles import ButtonStyle, LineEdit_Style, MessageStyle
 from utils import show_message, resource_path
+from favorites import add_favorite
+from favorites_screen import FavoritesScreen
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -32,10 +34,15 @@ class MainWindow(QWidget):
         # Создаём экраны (ТОЛЬКО ОДИН РАЗ)
         self.main_screen = main_screen(self)
         self.weather_screen = weather_screen(self)
+        self.fav_screen = FavoritesScreen(self)
 
         # Добавляем в стек
         self.stacked.addWidget(self.main_screen)  # индекс 0
         self.stacked.addWidget(self.weather_screen)  # индекс 1
+        self.stacked.addWidget(self.fav_screen) # индекс 2
+
+        self.main_screen.fav_list_btn.clicked.connect(self.go_to_favorites)
+        self.fav_screen.back_btn.clicked.connect(self.go_back)
 
         try:
             self.main_screen.change_theme.clicked.disconnect()
@@ -57,11 +64,21 @@ class MainWindow(QWidget):
         self.weather_screen.fav_btn.clicked.connect(self.add_to_favorites)
         self.weather_screen.search_field_up.returnPressed.connect(self.on_search_clicked)
 
-    def on_search_clicked(self):
-        if self.stacked.currentIndex() == 0:
-            city = self.main_screen.search_field_center.text()
-        else:
-            city = self.weather_screen.search_field_up.text()
+    def go_to_favorites(self):
+        self.fav_screen.refresh_list(self.search_from_fav)
+        self.stacked.setCurrentIndex(2)
+
+    # Метод для поиска погоды прямо из списка избранного
+    def search_from_fav(self, city_name):
+        self.on_search_clicked(city=city_name)
+
+    def on_search_clicked(self, city=None):
+        # Если город не передан напрямую, берем его из полей ввода
+        if not city:
+            if self.stacked.currentIndex() == 0:
+                city = self.main_screen.search_field_center.text()
+            else:
+                city = self.weather_screen.search_field_up.text()
 
         if not city:
             show_message(self, "Ошибка", "Введите название города", "error")
@@ -86,10 +103,10 @@ class MainWindow(QWidget):
                 show_message(self, "Ошибка", f"Ошибка API: {result.get('code', 'unknown')}", "error")
             return
 
-        # Если всё хорошо
+        # Если всё хорошо  обновляем экран погоды
         if "main" in result and "temp" in result["main"]:
             temp = result['main']['temp']
-            self.weather_screen.set_weather(city, temp)
+            self.weather_screen.set_weather(result.get("name", city), temp)
             self.stacked.setCurrentIndex(1)
         else:
             show_message(self, "Ошибка", "Не удалось получить данные о погоде", "error")
@@ -100,10 +117,12 @@ class MainWindow(QWidget):
     def add_to_favorites(self):
         city = self.weather_screen.city_label.text()
         if city and city != "Город":
-            print(f"Добавлено в избранное: {city}")
-            # временно меняется стиль кнопки
-            self.weather_screen.fav_btn.setStyleSheet(ButtonStyle.fav_btn_active)
-            show_message(self, "Избранное", f"Город '{city}' добавлен в избранное", "info")
+            if add_favorite(city):
+                print(f"Добавлено в файл: {city}")
+                self.weather_screen.fav_btn.setStyleSheet(ButtonStyle.fav_btn_active)
+                show_message(self, "Избранное", f"Город '{city}' добавлен", "info")
+            else:
+                show_message(self, "Инфо", "Город уже есть в избранном", "info")
         else:
             show_message(self, "Ошибка", "Нет города для добавления", "error")
 
@@ -120,6 +139,8 @@ class MainWindow(QWidget):
             self.main_screen.apply_theme(theme)
         if hasattr(self.weather_screen, 'apply_theme'):
             self.weather_screen.apply_theme(theme)
+        if hasattr(self.fav_screen, 'apply_theme'):
+            self.fav_screen.apply_theme(theme)
 
 
 app = QApplication(sys.argv)
