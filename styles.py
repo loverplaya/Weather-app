@@ -64,17 +64,26 @@ class ButtonStyle:
     }"""
 
     fav_btn = """
-            QPushButton {
-                font-size: 28px;
-                background-color: transparent;
-                color: gold;
-                border: 2px solid gold;
-                border-radius: 25px;
-            }
-            QPushButton:hover {
-                background-color: rgba(255, 215, 0, 0.2);
-            }
-        """
+        QPushButton {
+            font-size: 24px;
+            font-weight: bold;
+            background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1,
+                stop: 0 #3a1c6e, stop: 1 #1e3a5f);
+            color: #ffd700;
+            border: 2px solid #ffd700;
+            border-radius: 25px;
+            padding: 8px;
+        }
+        QPushButton:hover {
+            background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1,
+                stop: 0 #4a2c8e, stop: 1 #2e4a7f);
+            border: 2px solid #ffea00;
+            color: #ffea00;
+        }
+        QPushButton:pressed {
+            background: #2a1050;
+        }
+    """
 
     fav_btn_active = """
             QPushButton {

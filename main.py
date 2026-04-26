@@ -3,34 +3,11 @@ import os
 from PyQt6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QStackedWidget, QMessageBox)
 from PyQt6.QtGui import QIcon
 from background import background
-from screens import main_screen, weather_screen
+from screens import main_screen
+from weather_screen import weather_screen
 from weather_API import show_weather
 from styles import ButtonStyle, LineEdit_Style, MessageStyle
-
-# чтобы при компиляции были видны иконки
-def resource_path(relative_path):
-    try:
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
-    return os.path.join(base_path, relative_path)
-
-def show_message(parent, title, text, style_type="warning"):
-    msg = QMessageBox(parent)
-    msg.setWindowTitle(title)
-    msg.setText(text)
-
-    if style_type == "warning":
-        msg.setIcon(QMessageBox.Icon.Warning)
-        msg.setStyleSheet(MessageStyle.warning)
-    elif style_type == "error":
-        msg.setIcon(QMessageBox.Icon.Critical)
-        msg.setStyleSheet(MessageStyle.error)
-    elif style_type == "info":
-        msg.setIcon(QMessageBox.Icon.Information)
-        msg.setStyleSheet(MessageStyle.info)
-
-    msg.exec()
+from utils import show_message, resource_path
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -52,7 +29,7 @@ class MainWindow(QWidget):
         # Стек экранов
         self.stacked = QStackedWidget()
 
-        # Создаём экраны
+        # Создаём экраны (ТОЛЬКО ОДИН РАЗ)
         self.main_screen = main_screen(self)
         self.weather_screen = weather_screen(self)
 
@@ -60,18 +37,27 @@ class MainWindow(QWidget):
         self.stacked.addWidget(self.main_screen)  # индекс 0
         self.stacked.addWidget(self.weather_screen)  # индекс 1
 
+        try:
+            self.main_screen.change_theme.clicked.disconnect()
+        except:
+            pass
+        self.main_screen.change_theme.clicked.connect(self.toggle_theme)
+
         # Главный layout
         main_layout = QVBoxLayout()
         main_layout.addWidget(self.stacked)
         self.setLayout(main_layout)
 
-        # Подключаем кнопки
+        # Подключение кнопок (главный экран)
         self.main_screen.result_btn.clicked.connect(self.on_search_clicked)
         self.main_screen.search_field_center.returnPressed.connect(self.on_search_clicked)
         self.weather_screen.back_btn.clicked.connect(self.go_back)
 
+        # Подключение кнопок (экран погоды)
+        self.weather_screen.fav_btn.clicked.connect(self.add_to_favorites)
+        self.weather_screen.search_field_up.returnPressed.connect(self.on_search_clicked)
+
     def on_search_clicked(self):
-        # Берём город из активного экрана
         if self.stacked.currentIndex() == 0:
             city = self.main_screen.search_field_center.text()
         else:
@@ -83,7 +69,6 @@ class MainWindow(QWidget):
 
         result = show_weather(city)
 
-        # Проверяем, что пришло
         if result is None:
             show_message(self, "Ошибка", "Неизвестная ошибка", "error")
             return
@@ -101,7 +86,7 @@ class MainWindow(QWidget):
                 show_message(self, "Ошибка", f"Ошибка API: {result.get('code', 'unknown')}", "error")
             return
 
-        # Если всё хорошо — пришли данные о погоде
+        # Если всё хорошо
         if "main" in result and "temp" in result["main"]:
             temp = result['main']['temp']
             self.weather_screen.set_weather(city, temp)
@@ -112,6 +97,16 @@ class MainWindow(QWidget):
     def go_back(self):
         self.stacked.setCurrentIndex(0)
 
+    def add_to_favorites(self):
+        city = self.weather_screen.city_label.text()
+        if city and city != "Город":
+            print(f"Добавлено в избранное: {city}")
+            # временно меняется стиль кнопки
+            self.weather_screen.fav_btn.setStyleSheet(ButtonStyle.fav_btn_active)
+            show_message(self, "Избранное", f"Город '{city}' добавлен в избранное", "info")
+        else:
+            show_message(self, "Ошибка", "Нет города для добавления", "error")
+
     def toggle_theme(self):
         if self.bg.current_theme == "light":
             self.bg.set_theme("dark")
@@ -121,20 +116,10 @@ class MainWindow(QWidget):
             self.apply_theme_to_screen("light")
 
     def apply_theme_to_screen(self, theme):
-        if theme == "dark":
-            # поля ввода
-            self.main_screen.search_field_up.setStyleSheet(LineEdit_Style.writeCity_LineEdit_dark)
-            self.main_screen.search_field_center.setStyleSheet(LineEdit_Style.writeCity_LineEdit_dark)
-            # кнопки
-            self.main_screen.result_btn.setStyleSheet(ButtonStyle.weather_btn_dark)
-            self.weather_screen.back_btn.setStyleSheet(ButtonStyle.back_btn_dark)
-        else:
-            # поля ввода
-            self.main_screen.search_field_up.setStyleSheet(LineEdit_Style.writeCity_LineEdit)
-            self.main_screen.search_field_center.setStyleSheet(LineEdit_Style.writeCity_LineEdit)
-            # кнопки
-            self.main_screen.result_btn.setStyleSheet(ButtonStyle.weather_btn)
-            self.weather_screen.back_btn.setStyleSheet(ButtonStyle.back_btn)
+        if hasattr(self.main_screen, 'apply_theme'):
+            self.main_screen.apply_theme(theme)
+        if hasattr(self.weather_screen, 'apply_theme'):
+            self.weather_screen.apply_theme(theme)
 
 
 app = QApplication(sys.argv)

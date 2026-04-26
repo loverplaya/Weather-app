@@ -1,17 +1,8 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit, QLabel
-from PyQt6.QtCore import Qt, QSize
-from PyQt6.QtGui import QIcon, QFont
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit
+from PyQt6.QtCore import QSize
+from PyQt6.QtGui import QIcon
 from styles import ButtonStyle, LineEdit_Style
-import os
-import sys
-
-# чтобы при компиляции были видны иконки
-def resource_path(relative_path):
-    try:
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
-    return os.path.join(base_path, relative_path)
+from utils import resource_path
 
 class main_screen(QWidget):
     def __init__(self, parent=None):
@@ -19,7 +10,7 @@ class main_screen(QWidget):
         self.setupUi()
 
     def setupUi(self):
-        # ВЕРХНЯЯ ПАНЕЛЬ
+        # Верхняя часть
         self.top_layout = QHBoxLayout()
         self.top_layout.setContentsMargins(0, 5, 10, 0)
         self.top_layout.addStretch()
@@ -29,7 +20,7 @@ class main_screen(QWidget):
         self.change_theme.setIconSize(QSize(20, 20))
         self.change_theme.setFixedSize(37, 37)
         self.change_theme.setStyleSheet("border-radius: 10px; background-color: rgba(255,255,255,0.2);")
-        self.change_theme.clicked.connect(self.on_theme_clicked)
+
 
         self.search_field_up = QLineEdit()
         self.search_field_up.setPlaceholderText("Введите местоположение")
@@ -75,60 +66,16 @@ class main_screen(QWidget):
 
         self.setLayout(main_layout)
 
-    def on_theme_clicked(self):
-        # Ищем родителя с методом toggle_theme (поднимаемся выше)
-        parent = self.parent()
-        while parent:
-            if hasattr(parent, 'toggle_theme'):
-                parent.toggle_theme()
-                return
-            parent = parent.parent()
-
-    def update_position(self, width):
-        pass
-
-
-class weather_screen(QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setupUi()
-
-    def setupUi(self):
-        layout = QVBoxLayout()
-
-        self.city_label = QLabel("Город")
-        self.city_label.setStyleSheet("font-size: 24px; font-weight: bold; color: white;")
-        self.city_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.temp_label = QLabel("--°C")
-        self.temp_label.setStyleSheet("font-size: 48px; font-weight: bold; color: white;")
-        self.temp_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.fav_btn = QPushButton("★")
-        self.fav_btn.setFixedSize(50, 50)
-        self.fav_btn.setStyleSheet(ButtonStyle.fav_btn)
-        self.fav_btn.setToolTip("Добавить в избранное")
-
-        self.back_btn = QPushButton("← Назад")
-        self.back_btn.setMinimumHeight(40)
-        self.back_btn.setMinimumWidth(150)
-        self.back_btn.setStyleSheet(ButtonStyle.weather_btn)
-
-        layout.addStretch()
-        layout.addWidget(self.city_label)
-        layout.addWidget(self.temp_label)
-        layout.addStretch()
-        layout.addWidget(self.back_btn, alignment=Qt.AlignmentFlag.AlignCenter)
-        layout.addStretch()
-
-        self.setLayout(layout)
-
-    def set_weather(self, city, temp):
-        self.city_label.setText(city)
-        self.temp_label.setText(f"{temp:.1f}°C")
-
     def apply_theme(self, theme):
         if theme == "dark":
-            self.back_btn.setStyleSheet(ButtonStyle.back_btn_dark)
+            self.search_field_up.setStyleSheet(LineEdit_Style.writeCity_LineEdit_dark)
+            self.search_field_center.setStyleSheet(LineEdit_Style.writeCity_LineEdit_dark)
+            self.result_btn.setStyleSheet(ButtonStyle.weather_btn_dark)
+            self.change_theme.setStyleSheet("border-radius: 10px; background-color: rgba(0,0,0,0.3);")
         else:
-            self.back_btn.setStyleSheet(ButtonStyle.back_btn)
+            self.search_field_up.setStyleSheet(LineEdit_Style.writeCity_LineEdit)
+            self.search_field_center.setStyleSheet(LineEdit_Style.writeCity_LineEdit)
+            self.result_btn.setStyleSheet(ButtonStyle.weather_btn)
+            self.change_theme.setStyleSheet("border-radius: 10px; background-color: rgba(255,255,255,0.2);")
+
+
