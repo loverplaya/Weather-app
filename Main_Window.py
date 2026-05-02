@@ -42,7 +42,13 @@ class MainWindow(QWidget):
             result = show_weather(city)
             if result and "main" in result and "temp" in result["main"]:
                 temp = result['main']['temp']
-                self.main_screen.weather_summary.setText(f"{city}: {temp:.1f}°C")
+                humidity = result['main']['humidity']
+                wind = result['wind']['speed']
+                desc = result['weather'][0]['description'] if 'weather' in result else ''
+
+                # Формируем текст
+                text = f"<b>{city}</b><br>🌡️ {temp:.1f}°C  💧 {humidity}%  🌬️ {wind:.1f} м/с<br>📖 {desc}"
+                self.main_screen.weather_summary.setText(text)
             else:
                 self.main_screen.weather_summary.setText("Не удалось загрузить погоду")
         else:
@@ -119,7 +125,13 @@ class MainWindow(QWidget):
         # Если всё хорошо  обновляем экран погоды
         if "main" in result and "temp" in result["main"]:
             temp = result['main']['temp']
-            self.weather_screen.set_weather(result.get("name", city), temp)
+            humidity = result['main']['humidity']
+            pressure = result['main']['pressure']
+            wind = result['wind']['speed']
+            desc = result['weather'][0]['description'] if 'weather' in result else ''
+            city_name = result.get("name", city)
+
+            self.weather_screen.set_weather(city_name, temp, humidity, wind, pressure, desc)
             self.stacked.setCurrentIndex(1)
         else:
             show_message(self, "Ошибка", "Не удалось получить данные о погоде", "error")
@@ -168,7 +180,6 @@ class MainWindow(QWidget):
                 wind = result['wind']['speed']
                 desc = result['weather'][0]['description'] if 'weather' in result else ''
 
-                # Формируем текст
                 text = f"<b>{city}</b><br>🌡️ {temp:.1f}°C  💧 {humidity}%  🌬️ {wind:.1f} м/с<br>📖 {desc}"
                 self.main_screen.weather_summary.setText(text)
             else:

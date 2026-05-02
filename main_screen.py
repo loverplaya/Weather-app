@@ -60,17 +60,17 @@ class main_screen(QWidget):
         # Краткая информация о погоде по IP
         self.weather_summary = QLabel("Погода загружается...")
         self.weather_summary.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.weather_summary.setMaximumWidth(400)
-        self.weather_summary.setMinimumWidth(280)
+        self.weather_summary.setMaximumWidth(500)
+        self.weather_summary.setMinimumWidth(320)
         self.weather_summary.setMinimumHeight(100)
         self.weather_summary.setStyleSheet("""
             QLabel {
                 font-size: 16px; 
                 color: white; 
-                background-color: rgba(255, 255, 255, 0.12); 
-                border: 1px solid rgba(255, 255, 255, 0.2);
-                border-radius: 20px; 
-                padding: 15px;
+                background-color: rgba(0, 0, 0, 0.4); 
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                border-radius: 25px; 
+                padding: 20px 25px;
             }
         """)
         self.weather_summary.setWordWrap(True)
