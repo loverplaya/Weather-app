@@ -1,13 +1,15 @@
 from PyQt6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QStackedWidget, QMessageBox)
 from PyQt6.QtGui import QIcon
 from background import background
-from screens import main_screen
+from location import get_city_by_ip
+from main_screen import main_screen
 from weather_screen import weather_screen
 from weather_API import show_weather
 from styles import ButtonStyle, LineEdit_Style, MessageStyle
 from utils import show_message, resource_path
 from favorites import add_favorite
 from favorites_screen import FavoritesScreen
+from weather_API import show_weather
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -29,10 +31,22 @@ class MainWindow(QWidget):
         # Стек экранов
         self.stacked = QStackedWidget()
 
-        # Создаём экраны (ТОЛЬКО ОДИН РАЗ)
+        # Создаём экраны
         self.main_screen = main_screen(self)
         self.weather_screen = weather_screen(self)
         self.fav_screen = FavoritesScreen(self)
+
+        # Погода по IP при запуске
+        city = get_city_by_ip()
+        if city:
+            result = show_weather(city)
+            if result and "main" in result and "temp" in result["main"]:
+                temp = result['main']['temp']
+                self.main_screen.weather_summary.setText(f"{city}: {temp:.1f}°C")
+            else:
+                self.main_screen.weather_summary.setText("Не удалось загрузить погоду")
+        else:
+            self.main_screen.weather_summary.setText("Город не определён")
 
         # Добавляем в стек
         self.stacked.addWidget(self.main_screen)  # индекс 0
@@ -41,6 +55,7 @@ class MainWindow(QWidget):
 
         self.main_screen.fav_list_btn.clicked.connect(self.go_to_favorites)
         self.fav_screen.back_btn.clicked.connect(self.go_back)
+        self.main_screen.location_btn.clicked.connect(self.on_location_clicked)
 
         try:
             self.main_screen.change_theme.clicked.disconnect()
@@ -132,6 +147,9 @@ class MainWindow(QWidget):
             self.bg.set_theme("light")
             self.apply_theme_to_screen("light")
 
+    def on_location_clicked(self):
+        self.update_weather_by_ip_on_main()
+
     def apply_theme_to_screen(self, theme):
         if hasattr(self.main_screen, 'apply_theme'):
             self.main_screen.apply_theme(theme)
@@ -139,3 +157,21 @@ class MainWindow(QWidget):
             self.weather_screen.apply_theme(theme)
         if hasattr(self.fav_screen, 'apply_theme'):
             self.fav_screen.apply_theme(theme)
+
+    def update_weather_by_ip_on_main(self):
+        city = get_city_by_ip()
+        if city:
+            result = show_weather(city)
+            if result and "main" in result and "temp" in result["main"]:
+                temp = result['main']['temp']
+                humidity = result['main']['humidity']
+                wind = result['wind']['speed']
+                desc = result['weather'][0]['description'] if 'weather' in result else ''
+
+                # Формируем текст
+                text = f"<b>{city}</b><br>🌡️ {temp:.1f}°C  💧 {humidity}%  🌬️ {wind:.1f} м/с<br>📖 {desc}"
+                self.main_screen.weather_summary.setText(text)
+            else:
+                self.main_screen.weather_summary.setText("Не удалось загрузить погоду")
+        else:
+            self.main_screen.weather_summary.setText("Город не определён")

@@ -1,5 +1,5 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit
-from PyQt6.QtCore import QSize
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit, QLabel
+from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtGui import QIcon
 from styles import ButtonStyle, LineEdit_Style
 from utils import resource_path
@@ -34,8 +34,13 @@ class main_screen(QWidget):
         self.fav_list_btn.setFixedSize(37, 37)
         self.fav_list_btn.setStyleSheet("border-radius: 10px; background-color: rgba(255,255,255,0.2);")
 
+        self.location_btn = QPushButton("🔄")
+        self.location_btn.setFixedSize(37, 37)
+        self.location_btn.setStyleSheet("border-radius: 10px; background-color: rgba(255,255,255,0.2);")
+
         self.top_layout.addWidget(self.change_theme)
         self.top_layout.addWidget(self.fav_list_btn)
+        self.top_layout.addWidget(self.location_btn)
         self.top_layout.addWidget(self.search_field_up)
 
         # Центральная часть
@@ -52,6 +57,25 @@ class main_screen(QWidget):
         self.result_btn.setIconSize(QSize(20, 20))
         self.result_btn.setStyleSheet(ButtonStyle.weather_btn)
 
+        # Краткая информация о погоде по IP
+        self.weather_summary = QLabel("Погода загружается...")
+        self.weather_summary.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.weather_summary.setMaximumWidth(400)
+        self.weather_summary.setMinimumWidth(280)
+        self.weather_summary.setMinimumHeight(100)
+        self.weather_summary.setStyleSheet("""
+            QLabel {
+                font-size: 16px; 
+                color: white; 
+                background-color: rgba(255, 255, 255, 0.12); 
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 20px; 
+                padding: 15px;
+            }
+        """)
+        self.weather_summary.setWordWrap(True)
+        self.weather_summary.setMinimumHeight(80)
+
         # Сборка макетов
         h_layout = QHBoxLayout()
         h_layout.addStretch()
@@ -63,12 +87,22 @@ class main_screen(QWidget):
         btn_layout.addWidget(self.result_btn)
         btn_layout.addStretch()
 
+        weather_layout = QHBoxLayout()
+        weather_layout.addStretch()
+        weather_layout.addWidget(self.weather_summary)
+        weather_layout.addStretch()
+
         main_layout = QVBoxLayout()
         main_layout.addLayout(self.top_layout)
-        main_layout.addStretch(3)
+
+        main_layout.addStretch(1)
+
+        main_layout.addLayout(weather_layout)
+        main_layout.addSpacing(10)
         main_layout.addLayout(h_layout)
-        main_layout.addSpacing(5)
+        main_layout.addSpacing(10)
         main_layout.addLayout(btn_layout)
+
         main_layout.addStretch(1)
 
         self.setLayout(main_layout)
@@ -80,11 +114,13 @@ class main_screen(QWidget):
             self.result_btn.setStyleSheet(ButtonStyle.weather_btn_dark)
             self.change_theme.setStyleSheet("border-radius: 10px; background-color: rgba(0,0,0,0.3);")
             self.fav_list_btn.setStyleSheet("border-radius: 10px; background-color: rgba(0,0,0,0.3);")
+            self.location_btn.setStyleSheet("border-radius: 10px; background-color: rgba(0,0,0,0.3);")
         else:
             self.search_field_up.setStyleSheet(LineEdit_Style.writeCity_LineEdit)
             self.search_field_center.setStyleSheet(LineEdit_Style.writeCity_LineEdit)
             self.result_btn.setStyleSheet(ButtonStyle.weather_btn)
             self.change_theme.setStyleSheet("border-radius: 10px; background-color: rgba(255,255,255,0.2);")
             self.fav_list_btn.setStyleSheet("border-radius: 10px; background-color: rgba(255,255,255,0.2);")
+            self.location_btn.setStyleSheet("border-radius: 10px; background-color: rgba(255,255,255,0.2);")
 
 

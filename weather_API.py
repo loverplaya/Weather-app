@@ -1,5 +1,6 @@
 import requests
 from urllib.parse import quote
+from location import get_location, get_city_by_ip
 
 def show_weather(city_name):
     if not city_name:
@@ -25,3 +26,9 @@ def show_weather(city_name):
         return {"error": "timeout"}
     except:
         return {"error": "unknown"}
+
+def show_weather_by_ip():
+    city = get_city_by_ip()
+    if not city:
+        return {"error": "no_city_by_ip"}
+    return show_weather(city)
