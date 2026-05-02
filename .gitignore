@@ -114,3 +114,11 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Файлы данных приложения
+favorites.txt
+settings.txt
+last_location.txt
+
+# Папка с кэшем
+cache/
