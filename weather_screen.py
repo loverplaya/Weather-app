@@ -79,6 +79,19 @@ class weather_screen(QWidget):
 
         main_layout.addLayout(details_layout)
 
+        # Прогноз на 5 дней
+        self.forecast_title = QLabel("Прогноз на 5 дней")
+        self.forecast_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.forecast_title.setStyleSheet("font-size: 20px; font-weight: bold; color: white; margin-top: 20px;")
+        self.forecast_title.setVisible(False)
+        main_layout.addWidget(self.forecast_title)
+
+        self.forecast_layout = QHBoxLayout()
+        self.forecast_layout.setSpacing(15)
+        main_layout.addLayout(self.forecast_layout)
+
+        main_layout.addStretch(2)
+
         main_layout.addStretch(2)
 
         # Кнопки управления
@@ -123,6 +136,123 @@ class weather_screen(QWidget):
         layout.addWidget(title_label)
         layout.addWidget(value_label)
         return widget
+
+    def display_forecast(self, forecast_data):
+        while self.forecast_layout.count():
+            item = self.forecast_layout.takeAt(0)
+            widget = item.widget()
+            if widget:
+                widget.setParent(None)
+
+        if "error" in forecast_data or not forecast_data.get('list'):
+            self.forecast_title.setVisible(False)
+            return
+
+        from datetime import datetime
+        rus_days = {
+            "Mon": "понедельник", "Tue": "вторник", "Wed": "среда", "Thu": "четверг",
+            "Fri": "пятница", "Sat": "суббота", "Sun": "воскресенье"
+        }
+
+        days = {}
+        for item in forecast_data.get('list', []):
+            date = item['dt_txt'].split()[0]
+            if date not in days:
+                days[date] = item
+
+        today = datetime.now().strftime("%Y-%m-%d")
+        for date, item in days.items():
+            if date == today:
+                continue
+
+            temp = item['main']['temp']
+            desc = item['weather'][0]['description']
+            icon_code = item['weather'][0]['icon']
+
+            eng_day = datetime.strptime(date, "%Y-%m-%d").strftime("%a")
+            day_name = rus_days.get(eng_day, eng_day)
+
+            card = self._create_forecast_card(day_name, temp, desc, icon_code)
+            self.forecast_layout.addWidget(card)
+
+        if self.forecast_layout.count() > 0:
+            self.forecast_title.setVisible(True)
+
+    def _create_forecast_card(self, day_name, temp, desc, icon_code):
+        card = QFrame()
+        card.setMinimumWidth(160)
+        card.setMinimumHeight(240)
+
+        # Основная плашка
+        card.setStyleSheet("""
+            QFrame {
+                background-color: rgba(0, 0, 0, 0.25); 
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 25px;
+            }
+        """)
+
+        layout = QVBoxLayout(card)
+        layout.setContentsMargins(10, 20, 10, 20)
+        layout.setSpacing(10)
+        layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        #День недели
+        day_label = QLabel(day_name.upper())
+        day_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        day_label.setStyleSheet("""
+            font-size: 15px; 
+            font-weight: 800; 
+            color: #CCCCCC; 
+            background: transparent; 
+            border: none;
+        """)
+
+        #Иконка
+        icon_label = QLabel(self._get_icon_emoji(icon_code))
+        icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        icon_label.setStyleSheet("font-size: 45px; background: transparent; border: none;")
+
+        #Температура
+        temp_label = QLabel(f"{temp:.0f}°")
+        temp_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        temp_label.setStyleSheet("""
+            font-size: 38px; 
+            font-weight: 700; 
+            color: #FFFFFF; 
+            background: transparent; 
+            border: none;
+        """)
+
+        #Описание погоды
+        desc_label = QLabel(desc.capitalize())
+        desc_label.setWordWrap(True)
+        desc_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        desc_label.setStyleSheet("""
+            font-size: 15px; 
+            color: #FFFFFF; 
+            font-weight: 600;
+            background: transparent; 
+            border: none;
+            padding: 0 5px;
+        """)
+
+        layout.addWidget(day_label)
+        layout.addWidget(icon_label)
+        layout.addWidget(temp_label)
+        layout.addWidget(desc_label)
+
+        return card
+
+    def _get_icon_emoji(self, icon_code):
+        if not icon_code:
+            return "🌡️"
+        code = icon_code[:2]
+        icons = {
+            "01": "☀️", "02": "⛅", "03": "☁️", "04": "☁️",
+            "09": "🌧️", "10": "🌦️", "11": "⛈️", "13": "❄️", "50": "🌫️"
+        }
+        return icons.get(code, "🌡️")
 
     def set_weather(self, city, temp, humidity, wind, pressure, description):
         self.city_label.setText(city)

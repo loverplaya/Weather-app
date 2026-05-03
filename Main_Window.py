@@ -130,14 +130,13 @@ class MainWindow(QWidget):
             wind = result['wind']['speed']
             desc = result['weather'][0]['description'] if 'weather' in result else ''
             city_name = result.get("name", city)
+            self.load_forecast(city_name)
 
             self.weather_screen.set_weather(city_name, temp, humidity, wind, pressure, desc)
             self.stacked.setCurrentIndex(1)
         else:
             show_message(self, "Ошибка", "Не удалось получить данные о погоде", "error")
 
-    def go_back(self):
-        self.stacked.setCurrentIndex(0)
 
     def add_to_favorites(self):
         city = self.weather_screen.city_label.text()
@@ -186,3 +185,14 @@ class MainWindow(QWidget):
                 self.main_screen.weather_summary.setText("Не удалось загрузить погоду")
         else:
             self.main_screen.weather_summary.setText("Город не определён")
+
+    def load_forecast(self, city):
+        from weather_API import get_forecast
+        forecast = get_forecast(city)
+        self.weather_screen.display_forecast(forecast)
+
+    def go_back(self):
+        self.main_screen.search_field_center.clear()
+        self.weather_screen.search_field_up.clear()
+        self.weather_screen.fav_btn.setStyleSheet(ButtonStyle.weather_btn)
+        self.stacked.setCurrentIndex(0)
