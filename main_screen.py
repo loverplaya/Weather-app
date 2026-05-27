@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit, QLabel
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit, QLabel, QFrame
 from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtGui import QIcon
 from styles import ButtonStyle, LineEdit_Style
@@ -76,6 +76,31 @@ class main_screen(QWidget):
         self.weather_summary.setWordWrap(True)
         self.weather_summary.setMinimumHeight(80)
 
+        # Совет
+        self.tip_frame = QFrame()
+        self.tip_frame.setStyleSheet("""
+            QFrame {
+                background-color: rgba(0, 0, 0, 0.3);
+                border-radius: 15px;
+                padding: 10px;
+                margin-top: 10px;
+            }
+        """)
+        self.tip_frame.setVisible(False)
+
+        tip_layout = QHBoxLayout(self.tip_frame)
+
+        self.tip_icon = QLabel("💡")
+        self.tip_icon.setStyleSheet("font-size: 28px;")
+        self.tip_icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.tip_label = QLabel("Совет дня")
+        self.tip_label.setStyleSheet("font-size: 14px; color: white;")
+        self.tip_label.setWordWrap(True)
+
+        tip_layout.addWidget(self.tip_icon)
+        tip_layout.addWidget(self.tip_label, 1)
+
         # Сборка макетов
         h_layout = QHBoxLayout()
         h_layout.addStretch()
@@ -99,6 +124,12 @@ class main_screen(QWidget):
 
         main_layout.addLayout(weather_layout)
         main_layout.addSpacing(10)
+        tip_wrapper = QHBoxLayout()
+        tip_wrapper.addStretch()
+        tip_wrapper.addWidget(self.tip_frame)
+        tip_wrapper.addStretch()
+        main_layout.addLayout(tip_wrapper)
+        main_layout.addSpacing(10)
         main_layout.addLayout(h_layout)
         main_layout.addSpacing(10)
         main_layout.addLayout(btn_layout)
@@ -115,6 +146,16 @@ class main_screen(QWidget):
             self.change_theme.setStyleSheet("border-radius: 10px; background-color: rgba(0,0,0,0.3);")
             self.fav_list_btn.setStyleSheet("border-radius: 10px; background-color: rgba(0,0,0,0.3);")
             self.location_btn.setStyleSheet("border-radius: 10px; background-color: rgba(0,0,0,0.3);")
+
+            # Тёмная тема для совета
+            self.tip_frame.setStyleSheet("""
+                QFrame {
+                    background-color: rgba(255, 255, 255, 0.1);
+                    border-radius: 15px;
+                    padding: 10px;
+                    margin-top: 10px;
+                }
+            """)
         else:
             self.search_field_up.setStyleSheet(LineEdit_Style.writeCity_LineEdit)
             self.search_field_center.setStyleSheet(LineEdit_Style.writeCity_LineEdit)
@@ -122,5 +163,15 @@ class main_screen(QWidget):
             self.change_theme.setStyleSheet("border-radius: 10px; background-color: rgba(255,255,255,0.2);")
             self.fav_list_btn.setStyleSheet("border-radius: 10px; background-color: rgba(255,255,255,0.2);")
             self.location_btn.setStyleSheet("border-radius: 10px; background-color: rgba(255,255,255,0.2);")
+
+            # Светлая тема для совета
+            self.tip_frame.setStyleSheet("""
+                QFrame {
+                    background-color: rgba(0, 0, 0, 0.2);
+                    border-radius: 15px;
+                    padding: 10px;
+                    margin-top: 10px;
+                }
+            """)
 
 

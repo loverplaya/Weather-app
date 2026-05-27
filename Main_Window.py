@@ -4,7 +4,8 @@ from background import background
 from location import get_city_by_ip
 from main_screen import main_screen
 from weather_screen import weather_screen
-from weather_API import show_weather
+from weather_API import show_weather, get_weather_tip
+from tips import TipsManager
 from styles import ButtonStyle, LineEdit_Style, MessageStyle
 from utils import show_message, resource_path
 from favorites import add_favorite
@@ -14,6 +15,7 @@ from weather_API import show_weather
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
+        self.tips_manager = TipsManager()
         self.initializeUI()
 
     def initializeUI(self):
@@ -49,10 +51,17 @@ class MainWindow(QWidget):
                 # Формируем текст
                 text = f"<b>{city}</b><br>🌡️ {temp:.1f}°C  💧 {humidity}%  🌬️ {wind:.1f} м/с<br>📖 {desc}"
                 self.main_screen.weather_summary.setText(text)
+                tip = self.tips_manager.get_tip(result)
+                self.main_screen.tip_label.setText(tip)
+                self.main_screen.tip_frame.setVisible(True)
             else:
                 self.main_screen.weather_summary.setText("Не удалось загрузить погоду")
+                self.main_screen.tip_label.setText("🌤️ Хорошего дня!")
+                self.main_screen.tip_frame.setVisible(True)
         else:
             self.main_screen.weather_summary.setText("Город не определён")
+            self.main_screen.tip_label.setText("🌤️ Хорошего дня!")
+            self.main_screen.tip_frame.setVisible(True)
 
         # Добавляем в стек
         self.stacked.addWidget(self.main_screen)  # индекс 0
@@ -134,6 +143,10 @@ class MainWindow(QWidget):
 
             self.weather_screen.set_weather(city_name, temp, humidity, wind, pressure, desc)
             self.stacked.setCurrentIndex(1)
+
+            tip = self.tips_manager.get_tip(result)
+            self.main_screen.tip_label.setText(tip)
+            self.main_screen.tip_frame.setVisible(True)
         else:
             show_message(self, "Ошибка", "Не удалось получить данные о погоде", "error")
 
@@ -181,10 +194,16 @@ class MainWindow(QWidget):
 
                 text = f"<b>{city}</b><br>🌡️ {temp:.1f}°C  💧 {humidity}%  🌬️ {wind:.1f} м/с<br>📖 {desc}"
                 self.main_screen.weather_summary.setText(text)
+
+                tip = self.tips_manager.get_tip(result)
+                self.main_screen.tip_label.setText(tip)
+                self.main_screen.tip_frame.setVisible(True)
             else:
                 self.main_screen.weather_summary.setText("Не удалось загрузить погоду")
+                self.main_screen.tip_frame.setVisible(False)
         else:
             self.main_screen.weather_summary.setText("Город не определён")
+            self.main_screen.tip_frame.setVisible(False)
 
     def load_forecast(self, city):
         from weather_API import get_forecast
