@@ -83,6 +83,7 @@ class MainWindow(QWidget):
         self.main_screen.fav_list_btn.clicked.connect(self.go_to_favorites)
         self.fav_screen.back_btn.clicked.connect(self.go_back)
         self.main_screen.location_btn.clicked.connect(self.on_location_clicked)
+        self.main_screen.search_field_up.returnPressed.connect(self.on_search_clicked)
 
         try:
             self.main_screen.change_theme.clicked.disconnect()
@@ -113,10 +114,11 @@ class MainWindow(QWidget):
         self.on_search_clicked(city=city_name)
 
     def on_search_clicked(self, city=None):
-        # Если город не передан напрямую, берем его из полей ввода
         if not city:
             if self.stacked.currentIndex() == 0:
-                city = self.main_screen.search_field_center.text()
+                city = self.main_screen.search_field_up.text()
+                if not city:
+                    city = self.main_screen.search_field_center.text()
             else:
                 city = self.weather_screen.search_field_up.text()
 
@@ -154,6 +156,7 @@ class MainWindow(QWidget):
             self.load_forecast(city_name)
 
             self.weather_screen.set_weather(city_name, temp, humidity, wind, pressure, desc)
+            self.apply_theme_to_screen(self.bg.current_theme)
             self.stacked.setCurrentIndex(1)
 
             tip = self.tips_manager.get_tip(result)
@@ -226,5 +229,4 @@ class MainWindow(QWidget):
     def go_back(self):
         self.main_screen.search_field_center.clear()
         self.weather_screen.search_field_up.clear()
-        self.weather_screen.fav_btn.setStyleSheet(ButtonStyle.fav_btn)
         self.stacked.setCurrentIndex(0)
