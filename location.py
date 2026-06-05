@@ -14,9 +14,9 @@ def load_last_city():
 def get_location(ip=None):
     try:
         if ip is None:
-            url = 'https://ipwho.is/?lang=ru'
+            url = 'http://ipwho.is/?lang=ru'
         else:
-            url = f'https://ipwho.is/{ip}?lang=ru'
+            url = f'http://ipwho.is/{ip}?lang=ru'
 
         response = requests.get(url, timeout=3)
         if response.status_code == 200:

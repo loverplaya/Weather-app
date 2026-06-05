@@ -98,6 +98,40 @@ class ButtonStyle:
             }
         """
 
+    del_btn = """
+            QPushButton {
+                border: none;
+                background-color: rgba(0, 0, 0, 0.05); 
+                border-radius: 8px;
+                image: url(icons/delete_red.png);
+                padding: 8px;
+            }
+            QPushButton:hover {
+                background-color: #ff4d4d;
+                image: url(icons/delete.png);
+            }
+            QPushButton:pressed {
+                background-color: #cc0000;
+            }
+        """
+
+    del_btn_dark = """
+            QPushButton {
+                border: none;
+                background-color: rgba(255, 255, 255, 0.1);
+                border-radius: 8px;
+                image: url(icons/delete_dark.png);
+                padding: 8px;
+            }
+            QPushButton:hover {
+                background-color: #e03e3e;
+                image: url(icons/delete.png);
+            }
+            QPushButton:pressed {
+                background-color: #b32424;
+            }
+        """
+
 
 class LineEdit_Style:
     writeCity_LineEdit =  """QLineEdit {

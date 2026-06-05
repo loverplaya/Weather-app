@@ -16,3 +16,8 @@ def get_favorites():
         return []
     with open(FILE_PATH, "r", encoding="utf-8") as f:
         return [line.strip() for line in f if line.strip()]
+
+def save_favorites(cities):
+    with open(FILE_PATH, "w", encoding="utf-8") as f:
+        for city in cities:
+            f.write(city + "\n")
