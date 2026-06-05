@@ -4,13 +4,13 @@ from background import background
 from location import get_city_by_ip
 from main_screen import main_screen
 from weather_screen import weather_screen
-from weather_API import show_weather, get_weather_tip
 from tips import TipsManager
 from styles import ButtonStyle, LineEdit_Style, MessageStyle
 from utils import show_message, resource_path
 from favorites import add_favorite
 from favorites_screen import FavoritesScreen
 from weather_API import show_weather
+from settings import save_last_city, load_last_city, load_theme, save_theme
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -22,14 +22,20 @@ class MainWindow(QWidget):
         self.setGeometry(600, 200, 1366, 768)
         self.setWindowTitle("Прогноз погоды")
         self.setWindowIcon(QIcon(resource_path("icons/app_icon.ico")))
+        self.bg = background(self)
+
+        saved_theme = load_theme()
+        if saved_theme == "dark":
+            self.bg.current_theme = "dark"
+        else:
+            self.bg.current_theme = "light"
+
+        self.bg.apply_gradient()
         self.setUpMainWindow()
+        self.apply_theme_to_screen(self.bg.current_theme)
         self.show()
 
     def setUpMainWindow(self):
-        # Фон
-        self.bg = background(self)
-        self.bg.apply_gradient()
-
         # Стек экранов
         self.stacked = QStackedWidget()
 
@@ -38,28 +44,34 @@ class MainWindow(QWidget):
         self.weather_screen = weather_screen(self)
         self.fav_screen = FavoritesScreen(self)
 
-        # Погода по IP при запуске
+        # Определяем город
         city = get_city_by_ip()
-        if city:
-            result = show_weather(city)
-            if result and "main" in result and "temp" in result["main"]:
-                temp = result['main']['temp']
-                humidity = result['main']['humidity']
-                wind = result['wind']['speed']
-                desc = result['weather'][0]['description'] if 'weather' in result else ''
 
-                # Формируем текст
-                text = f"<b>{city}</b><br>🌡️ {temp:.1f}°C  💧 {humidity}%  🌬️ {wind:.1f} м/с<br>📖 {desc}"
-                self.main_screen.weather_summary.setText(text)
-                tip = self.tips_manager.get_tip(result)
-                self.main_screen.tip_label.setText(tip)
-                self.main_screen.tip_frame.setVisible(True)
-            else:
-                self.main_screen.weather_summary.setText("Не удалось загрузить погоду")
-                self.main_screen.tip_label.setText("🌤️ Хорошего дня!")
-                self.main_screen.tip_frame.setVisible(True)
+        if not city:
+            city = load_last_city()
+
+        if not city:
+            city = "Москва"
+
+        # Сохраняем город
+        save_last_city(city)
+
+        # Загружаем погоду для этого города
+        result = show_weather(city)
+        if result and "main" in result and "temp" in result["main"]:
+            temp = result['main']['temp']
+            humidity = result['main']['humidity']
+            wind = result['wind']['speed']
+            desc = result['weather'][0]['description'] if 'weather' in result else ''
+
+            text = f"<b>{city}</b><br>🌡️ {temp:.1f}°C  💧 {humidity}%  🌬️ {wind:.1f} м/с<br>📖 {desc}"
+            self.main_screen.weather_summary.setText(text)
+
+            tip = self.tips_manager.get_tip(result)
+            self.main_screen.tip_label.setText(tip)
+            self.main_screen.tip_frame.setVisible(True)
         else:
-            self.main_screen.weather_summary.setText("Город не определён")
+            self.main_screen.weather_summary.setText(f"<b>{city}</b><br>Не удалось загрузить погоду")
             self.main_screen.tip_label.setText("🌤️ Хорошего дня!")
             self.main_screen.tip_frame.setVisible(True)
 
@@ -166,9 +178,11 @@ class MainWindow(QWidget):
         if self.bg.current_theme == "light":
             self.bg.set_theme("dark")
             self.apply_theme_to_screen("dark")
+            save_theme("dark")
         else:
             self.bg.set_theme("light")
             self.apply_theme_to_screen("light")
+            save_theme("light")
 
     def on_location_clicked(self):
         self.update_weather_by_ip_on_main()
@@ -212,5 +226,5 @@ class MainWindow(QWidget):
     def go_back(self):
         self.main_screen.search_field_center.clear()
         self.weather_screen.search_field_up.clear()
-        self.weather_screen.fav_btn.setStyleSheet(ButtonStyle.weather_btn)
+        self.weather_screen.fav_btn.setStyleSheet(ButtonStyle.fav_btn)
         self.stacked.setCurrentIndex(0)
