@@ -155,7 +155,6 @@ class MainWindow(QWidget):
         city = self.weather_screen.city_label.text()
         if city and city != "Город":
             if add_favorite(city):
-                print(f"Добавлено в файл: {city}")
                 self.weather_screen.fav_btn.setStyleSheet(ButtonStyle.fav_btn_active)
                 show_message(self, "Избранное", f"Город '{city}' добавлен", "info")
             else:

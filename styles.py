@@ -85,18 +85,20 @@ class ButtonStyle:
         }
     """
 
-    fav_btn_active = """
-            QPushButton {
-                font-size: 28px;
-                background-color: gold;
-                color: black;
-                border: 2px solid gold;
-                border-radius: 25px;
-            }
-            QPushButton:hover {
-                background-color: rgba(255, 215, 0, 0.8);
-            }
-        """
+    fav_btn_active =  """
+    QPushButton {
+        font-size: 14px;
+        font-weight: bold;
+        background-color: #ffd700;
+        color: #333333;
+        border: none;
+        border-radius: 25px;
+        padding: 8px 16px;
+    }
+    QPushButton:hover {
+        background-color: #ffea00;
+    }
+"""
 
     del_btn = """
             QPushButton {
